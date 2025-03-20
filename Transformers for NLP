@@ -1,0 +1,40 @@
+import tensorflow as tf
+from tensorflow.keras.layers import Embedding, Dense, MultiHeadAttention, LayerNormalization, Dropout
+from tensorflow.keras.models import Model
+import numpy as np
+
+# Transformer Block
+class TransformerBlock(tf.keras.layers.Layer):
+    def __init__(self, embed_dim, num_heads):
+        super().__init__()
+        self.attention = MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim)
+        self.norm1 = LayerNormalization()
+        self.norm2 = LayerNormalization()
+        self.dense = Dense(embed_dim, activation='relu')
+
+    def call(self, inputs):
+        attn_output = self.attention(inputs, inputs)
+        x = self.norm1(inputs + attn_output)
+        dense_output = self.dense(x)
+        return self.norm2(x + dense_output)
+
+# Text Classification Model
+def build_transformer_model():
+    inputs = tf.keras.layers.Input(shape=(50,))
+    embedding = Embedding(input_dim=10000, output_dim=64)(inputs)
+    transformer = TransformerBlock(64, 4)(embedding)
+    flatten = tf.keras.layers.GlobalAveragePooling1D()(transformer)
+    outputs = Dense(1, activation='sigmoid')(flatten)
+    
+    model = Model(inputs, outputs)
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    return model
+
+# Train Model
+X_train = np.random.randint(0, 10000, (5000, 50))
+y_train = np.random.randint(0, 2, (5000, 1))
+model = build_transformer_model()
+model.fit(X_train, y_train, epochs=5, verbose=1)
+
+# Predict
+print(model.predict(np.random.randint(0, 10000, (1, 50))))
