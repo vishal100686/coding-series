@@ -1,0 +1,42 @@
+import tensorflow as tf
+import numpy as np
+import random
+import string
+
+# Sample text dataset
+text = "Hello world! Welcome to deep learning with LSTMs."
+chars = sorted(set(text))
+char_to_idx = {c: i for i, c in enumerate(chars)}
+idx_to_char = {i: c for i, c in enumerate(chars)}
+
+# Prepare Data
+sequence_length = 10
+X, y = [], []
+for i in range(len(text) - sequence_length):
+    X.append([char_to_idx[c] for c in text[i:i + sequence_length]])
+    y.append(char_to_idx[text[i + sequence_length]])
+
+X = np.array(X)
+y = np.array(y)
+
+# Build Model
+model = tf.keras.Sequential([
+    tf.keras.layers.Embedding(len(chars), 10, input_length=sequence_length),
+    tf.keras.layers.LSTM(64, return_sequences=True),
+    tf.keras.layers.LSTM(64),
+    tf.keras.layers.Dense(len(chars), activation='softmax')
+])
+
+# Compile & Train
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
+model.fit(X, y, epochs=500, verbose=0)
+
+# Generate Text
+def generate_text(seed_text, length=50):
+    for _ in range(length):
+        X_seed = np.array([[char_to_idx[c] for c in seed_text[-sequence_length:]]])
+        pred_idx = np.argmax(model.predict(X_seed, verbose=0))
+        seed_text += idx_to_char[pred_idx]
+    return seed_text
+
+print(generate_text("Hello worl"))
