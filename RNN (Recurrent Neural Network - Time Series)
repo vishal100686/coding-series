@@ -1,0 +1,16 @@
+# Dummy Sequential Data
+X = np.random.randn(100, 10, 1)  # 100 samples, 10 timesteps, 1 feature
+y = np.random.randn(100, 1)  # Output
+
+# Build Model
+model = tf.keras.Sequential([
+    tf.keras.layers.SimpleRNN(50, activation='relu', input_shape=(10,1)),
+    tf.keras.layers.Dense(1)
+])
+
+# Compile & Train
+model.compile(optimizer='adam', loss='mse')
+model.fit(X, y, epochs=20, verbose=0)
+
+# Predict
+print(model.predict(X[:1]))  # Predict on first sample
