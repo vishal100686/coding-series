@@ -1,0 +1,9 @@
+from sklearn.tree import DecisionTreeClassifier
+
+X = [[20], [50], [100]]  # Phone prices
+y = [0, 0, 1]  # 0 = No Buy, 1 = Buy
+
+model = DecisionTreeClassifier()
+model.fit(X, y)
+
+print(model.predict([[75]]))  # Output: [1] (Buy)
