@@ -1,0 +1,20 @@
+import torch
+import torch.nn as nn
+
+X = torch.tensor([[2.0], [3.0], [4.0], [5.0], [6.0]])
+Y = torch.tensor([[0.0], [0.0], [0.0], [1.0], [1.0]])
+
+model = nn.Sequential(nn.Linear(1, 1), nn.Sigmoid())
+criterion = nn.BCELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+
+for epoch in range(1000):
+    y_pred = model(X)
+    loss = criterion(y_pred, Y)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    if epoch % 200 == 0:
+        print(f'Epoch {epoch}: Loss={loss.item()}')
+
+print(model(torch.tensor([[4.5]])))  # Predict
