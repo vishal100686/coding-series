@@ -1,0 +1,29 @@
+import torch
+import torch.nn as nn
+import matplotlib.pyplot as plt
+
+# Step 1: Data (House area vs Price)
+X = torch.tensor([[500.], [750.], [1000.], [1250.], [1500.]])
+Y = torch.tensor([[150.], [200.], [250.], [300.], [350.]])
+
+# Step 2: Model
+model = nn.Linear(1, 1)
+
+# Step 3: Loss & Optimizer
+criterion = nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.0001)
+
+# Step 4: Training
+for epoch in range(5000):
+    y_pred = model(X)
+    loss = criterion(y_pred, Y)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    if epoch % 500 == 0:
+        print(f'Epoch {epoch}: Loss={loss.item()}')
+
+# Step 5: Predict
+area = torch.tensor([[2000.]])
+price = model(area).item()
+print(f'Predicted Price: {price}')
