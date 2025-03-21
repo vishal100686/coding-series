@@ -1,0 +1,29 @@
+import torch
+import torchvision
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
+import torchvision.transforms as transforms
+
+# Data loading
+train = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transforms.ToTensor())
+train_loader = DataLoader(train, batch_size=64, shuffle=True)
+
+# Model
+model = nn.Sequential(nn.Flatten(),
+                      nn.Linear(28*28, 128),
+                      nn.ReLU(),
+                      nn.Linear(128, 10))
+
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+# Training
+for epoch in range(2):
+    for images, labels in train_loader:
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    print(f'Epoch {epoch}: Loss={loss.item()}')
