@@ -1,0 +1,24 @@
+from tensorflow.keras.datasets import boston_housing
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+import numpy as np
+
+# 1. Load Data
+(X_train, y_train), (X_test, y_test) = boston_housing.load_data()
+
+# 2. Normalize
+X_train = X_train / np.max(X_train)
+X_test = X_test / np.max(X_test)
+
+# 3. Model
+model = Sequential([
+    Dense(64, activation='relu', input_shape=(13,)),
+    Dense(1)
+])
+
+# 4. Compile & Train
+model.compile(optimizer='adam', loss='mse')
+model.fit(X_train, y_train, epochs=50)
+
+# 5. Evaluate
+print("Test Loss (MSE):", model.evaluate(X_test, y_test))
